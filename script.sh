@@ -14,8 +14,8 @@ echo " Target Dispatch URL: $TARGET_URL"
 echo "-----------------------------------"
 
 if [ -z "$TARGET_URL" ]; then
-    echo "ERROR: TARGET_SCRIPT_URL is empty. The workflow did not determine a script to run."
-    exit 1
+    echo "WARNING: TARGET_SCRIPT_URL is empty. The workflow did not determine a script to run. Skipping execution."
+    exit 0
 fi
 
 export GITHUB_ENV
@@ -34,13 +34,18 @@ if [[ "$EXECUTION_MODE" == "LEGACY" ]] || [[ "$TARGET_URL" == *".git"* ]]; then
     echo "Entered repository directory: $(pwd)"
 
     SCRIPT_TO_RUN=""
-    for name in "one.sh" "two.sh" "three.sh"; do
-        if [ -f "$name" ]; then
-            echo "Found standard legacy script: $name"
-            SCRIPT_TO_RUN="./$name"
-            break
-        fi
-    done
+    if [ -n "$SLOT_NAME" ] && [ -f "${SLOT_NAME}.sh" ]; then
+        echo "Found dynamically requested script: ${SLOT_NAME}.sh"
+        SCRIPT_TO_RUN="./${SLOT_NAME}.sh"
+    else
+        for name in "one.sh" "two.sh" "three.sh" "four.sh" "five.sh" "six.sh" "seven.sh" "eight.sh" "nine.sh" "ten.sh" "eleven.sh" "twelve.sh" "thirteen.sh" "fourteen.sh" "fifteen.sh" "sixteen.sh" "seventeen.sh" "eighteen.sh"; do
+            if [ -f "$name" ]; then
+                echo "Found standard legacy script: $name"
+                SCRIPT_TO_RUN="./$name"
+                break
+            fi
+        done
+    fi
 
     if [ -z "$SCRIPT_TO_RUN" ]; then
         echo "Standard script name not found. Searching for any .sh file..."
